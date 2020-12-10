@@ -18,6 +18,52 @@ python-versions = ">=3.6"
 vine = "5.0.0"
 
 [[package]]
+name = "apis-core"
+version = "0.14.4"
+description = "Base package for the APIS framework"
+category = "main"
+optional = false
+python-versions = ">=3.6,<3.7"
+
+[package.dependencies]
+celery = ">=5.0.4,<6.0.0"
+convertdate = ">=2.3.0,<3.0.0"
+Django = ">=2.2.17,<2.3.0"
+django-autocomplete-light = ">=3.8.1,<4.0.0"
+django-cors-headers = ">=3.5.0,<4.0.0"
+django-crispy-forms = ">=1.10.0,<2.0.0"
+django-crum = ">=0.7.9,<0.8.0"
+django-filter = ">=2.4.0,<3.0.0"
+django-gm2m = ">=1.1.1,<2.0.0"
+django-guardian = ">=2.3.0,<3.0.0"
+django-haystack = ">=3.0,<4.0"
+django-leaflet = ">=0.27.1,<0.28.0"
+django-model-utils = ">=4.1.1,<5.0.0"
+django-reversion = ">=3.0.8,<4.0.0"
+django-reversion-compare = ">=0.12.2,<0.13.0"
+django-summernote = ">=0.8.11,<0.9.0"
+django-tables2 = ">=2.3.3,<3.0.0"
+djangorestframework = ">=3.12.2,<4.0.0"
+djangorestframework-csv = ">=2.1.0,<3.0.0"
+djangorestframework-jsonschema = ">=0.1.1,<0.2.0"
+djangorestframework-xml = ">=2.0.0,<3.0.0"
+drf-spectacular = ">=0.11.1,<0.12.0"
+jmespath = ">=0.10.0,<0.11.0"
+jsonschema = ">=3.2.0,<4.0.0"
+lxml = ">=4.6.2,<5.0.0"
+pymongo = ">=3.11.2,<4.0.0"
+pysolr = ">=3.9.0,<4.0.0"
+PyYAML = ">=5.3.1,<6.0.0"
+rdflib = ">=5.0.0,<6.0.0"
+regex = ">=2020.11.13,<2021.0.0"
+requests = ">=2.25.0,<3.0.0"
+sentry-sdk = ">=0.19.5,<0.20.0"
+SPARQLWrapper = ">=1.8.5,<2.0.0"
+tablib = ">=3.0.0,<4.0.0"
+unicodecsv = ">=0.14.1,<0.15.0"
+whitenoise = ">=5.2.0,<6.0.0"
+
+[[package]]
 name = "appdirs"
 version = "1.4.4"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
@@ -1040,7 +1086,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.6"
-content-hash = "711a43a3d3236055f3410eae58dd1194e1444c678f6e21f7c5d4087e8c54da94"
+content-hash = "15b3dcba151e7e1454a3997d5c049a98560166f0afcafd1e0997f7951b648b34"
 
 [metadata.files]
 acdh-django-charts = [
@@ -1050,6 +1096,10 @@ acdh-django-charts = [
 amqp = [
     {file = "amqp-5.0.2-py3-none-any.whl", hash = "sha256:5b9062d5c0812335c75434bf17ce33d7a20ecfedaa0733faec7379868eb4068a"},
     {file = "amqp-5.0.2.tar.gz", hash = "sha256:fcd5b3baeeb7fc19b3486ff6d10543099d40ae1f5c9196eae695d1cde1b2f784"},
+]
+apis-core = [
+    {file = "apis-core-0.14.4.tar.gz", hash = "sha256:765ef245e9e7aa4b11858a2f910f9b5403fdf40e000bfb1feb1a330a7128dd33"},
+    {file = "apis_core-0.14.4-py3-none-any.whl", hash = "sha256:c609a2272577fbe3383abe470c8257ded72672a708d1c243cbc7dec81fa6694d"},
 ]
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
