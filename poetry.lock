@@ -1,4 +1,12 @@
 [[package]]
+name = "acdh-django-charts"
+version = "0.5.3"
+description = "An app to explore your data through charts based on Highcharts.js"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "amqp"
 version = "5.0.2"
 description = "Low-level AMQP client for Python (fork of amqplib)."
@@ -1043,9 +1051,13 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.6"
-content-hash = "5ab04c91a5b972a769abac58797be813a801452ad828e864797a85310628729a"
+content-hash = "88088821d7198a051f13b372d3d7fe55aea6a1ea0096ec842e2ef2831d36d28a"
 
 [metadata.files]
+acdh-django-charts = [
+    {file = "acdh-django-charts-0.5.3.tar.gz", hash = "sha256:c9ecf3407e60a4401df5d35b1fae4de03ba659579783de592f21c3857f4f113b"},
+    {file = "acdh_django_charts-0.5.3-py2.py3-none-any.whl", hash = "sha256:d231c52327e079fee77410f65acab0e4c934b49e7ca03979cc9d4589f504fd1b"},
+]
 amqp = [
     {file = "amqp-5.0.2-py3-none-any.whl", hash = "sha256:5b9062d5c0812335c75434bf17ce33d7a20ecfedaa0733faec7379868eb4068a"},
     {file = "amqp-5.0.2.tar.gz", hash = "sha256:fcd5b3baeeb7fc19b3486ff6d10543099d40ae1f5c9196eae695d1cde1b2f784"},
