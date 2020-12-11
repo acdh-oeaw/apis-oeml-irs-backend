@@ -20,7 +20,7 @@ APIS_BASE_URI = "https://apis.acdh.oeaw.ac.at/"
 APIS_OEBL_BIO_COLLECTION = "ÖBL Biographie"
 
 
-ALLOWED_HOSTS = re.sub(r'https?://', '', os.environ.get('GITLAB_ENVIRONMENT_URL', os.environ.get('ALLOWED_HOSTS', 'localhost'))).split(',')
+ALLOWED_HOSTS = re.sub(r'https?://', '', os.environ.get('GITLAB_ENVIRONMENT_URL', os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1'))).split(',')
 # You need to allow '10.0.0.0/8' for service health checks.
 ALLOWED_CIDR_NETS = ['10.0.0.0/8', '127.0.0.0/8']
 
