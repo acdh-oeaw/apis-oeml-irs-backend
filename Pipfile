@@ -51,7 +51,6 @@ unicodecsv = "==0.*,>=0.14.1"
 whitenoise = "==5.*,>=5.2.0"
 
 [dev-packages]
-black = "==20.*,>=20.8.0.b1"
 dephell = {version = "==0.*,>=0.8.3", extras = ["full"]}
 django-extensions = "==3.*,>=3.1.0"
 pylint = "==2.*,>=2.6.0"
