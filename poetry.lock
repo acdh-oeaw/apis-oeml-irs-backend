@@ -19,7 +19,7 @@ vine = "5.0.0"
 
 [[package]]
 name = "apis-core"
-version = "0.14.4"
+version = "0.14.5"
 description = "Base package for the APIS framework"
 category = "main"
 optional = false
@@ -1086,7 +1086,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.6"
-content-hash = "15b3dcba151e7e1454a3997d5c049a98560166f0afcafd1e0997f7951b648b34"
+content-hash = "11fabc225ca5300ba33e9601a0703571573363fd2a4cb5f762df5490e615b2b5"
 
 [metadata.files]
 acdh-django-charts = [
@@ -1098,8 +1098,8 @@ amqp = [
     {file = "amqp-5.0.2.tar.gz", hash = "sha256:fcd5b3baeeb7fc19b3486ff6d10543099d40ae1f5c9196eae695d1cde1b2f784"},
 ]
 apis-core = [
-    {file = "apis-core-0.14.4.tar.gz", hash = "sha256:765ef245e9e7aa4b11858a2f910f9b5403fdf40e000bfb1feb1a330a7128dd33"},
-    {file = "apis_core-0.14.4-py3-none-any.whl", hash = "sha256:c609a2272577fbe3383abe470c8257ded72672a708d1c243cbc7dec81fa6694d"},
+    {file = "apis-core-0.14.5.tar.gz", hash = "sha256:085e1f804b910547b52e652216eb19fbe86b77efbea1d2ea4cae144ebd204d3d"},
+    {file = "apis_core-0.14.5-py3-none-any.whl", hash = "sha256:f7f2a4517e5ae0932bfdee13decbd06f01d87ee600497c48f1863543802c9431"},
 ]
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
