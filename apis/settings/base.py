@@ -62,7 +62,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "reversion",
-    "reversion_compare",
     "crispy_forms",
     "django_filters",
     "django_tables2",

@@ -47,7 +47,7 @@ vine = "5.0.0"
 
 [[package]]
 name = "apis-core"
-version = "0.14.7"
+version = "0.15.0"
 description = "Base package for the APIS framework"
 category = "main"
 optional = false
@@ -56,7 +56,7 @@ python-versions = ">=3.6,<3.7"
 [package.dependencies]
 celery = ">=5.0.4,<6.0.0"
 convertdate = ">=2.3.0,<3.0.0"
-Django = ">=2.2.17,<2.3.0"
+Django = ">=3.1.4,<4.0.0"
 django-autocomplete-light = ">=3.8.1,<4.0.0"
 django-cors-headers = ">=3.5.0,<4.0.0"
 django-crispy-forms = ">=1.10.0,<2.0.0"
@@ -68,7 +68,6 @@ django-haystack = ">=3.0,<4.0"
 django-leaflet = ">=0.27.1,<0.28.0"
 django-model-utils = ">=4.1.1,<5.0.0"
 django-reversion = ">=3.0.8,<4.0.0"
-django-reversion-compare = ">=0.12.2,<0.13.0"
 django-summernote = ">=0.8.11,<0.9.0"
 django-tables2 = ">=2.3.3,<3.0.0"
 djangorestframework = ">=3.12.2,<4.0.0"
@@ -98,6 +97,17 @@ description = "A small Python module for determining appropriate platform-specif
 category = "dev"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "asgiref"
+version = "3.3.1"
+description = "ASGI specs, helper code, and adapters"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+tests = ["pytest", "pytest-asyncio"]
 
 [[package]]
 name = "astroid"
@@ -561,14 +571,6 @@ python-versions = ">=3.6"
 packaging = "*"
 
 [[package]]
-name = "diff-match-patch"
-version = "20200713"
-description = "Repackaging of Google's Diff Match and Patch libraries. Offers robust algorithms to perform the operations required for synchronizing plain text."
-category = "main"
-optional = false
-python-versions = ">=2.7"
-
-[[package]]
 name = "dj-database-url"
 version = "0.5.0"
 description = "Use Database URLs in your Django Application."
@@ -578,13 +580,14 @@ python-versions = "*"
 
 [[package]]
 name = "django"
-version = "2.2.17"
+version = "3.1.4"
 description = "A high-level Python Web framework that encourages rapid development and clean, pragmatic design."
 category = "main"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 
 [package.dependencies]
+asgiref = ">=3.2.10,<4"
 pytz = "*"
 sqlparse = ">=0.2.2"
 
@@ -738,19 +741,6 @@ python-versions = ">=3.6"
 
 [package.dependencies]
 django = ">=1.11"
-
-[[package]]
-name = "django-reversion-compare"
-version = "0.12.2"
-description = "history compare for django-reversion"
-category = "main"
-optional = false
-python-versions = ">=3.6,<4.0"
-
-[package.dependencies]
-diff-match-patch = "*"
-django = ">=2.2,<3.1"
-django-reversion = "*"
 
 [[package]]
 name = "django-summernote"
@@ -1188,6 +1178,19 @@ description = "NumPy is the fundamental package for array computing with Python.
 category = "main"
 optional = false
 python-versions = ">=3.6"
+
+[[package]]
+name = "oebl-irs-workflow"
+version = "0.1.1"
+description = "Workflow module for the IRS extension of the APIS framework"
+category = "main"
+optional = false
+python-versions = ">=3.6,<3.7"
+
+[package.dependencies]
+apis-core = ">=0.15.0,<0.16.0"
+Django = ">=3.1.4,<4.0.0"
+djangorestframework = ">=3.12.2,<4.0.0"
 
 [[package]]
 name = "packaging"
@@ -1733,7 +1736,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.6"
-content-hash = "aa91075c74dc6ed304987c8fcdc634bcf058c8d0dd48e1115f4d055e4238703e"
+content-hash = "a3aa7483edf6aac4381be4cb4d314200bc1c6e61595a7cf8457cf9ef1f245f9f"
 
 [metadata.files]
 acdh-django-charts = [
@@ -1788,12 +1791,16 @@ amqp = [
     {file = "amqp-5.0.2.tar.gz", hash = "sha256:fcd5b3baeeb7fc19b3486ff6d10543099d40ae1f5c9196eae695d1cde1b2f784"},
 ]
 apis-core = [
-    {file = "apis-core-0.14.7.tar.gz", hash = "sha256:33beed79b41f60536a3e30ed003d5850c5ced6ee7e44ccd0212dee8096cc8830"},
-    {file = "apis_core-0.14.7-py3-none-any.whl", hash = "sha256:8938d992569ab9bfdbe95ca003e9511e6cd3d7dd42862ceb8c5785c9df52006e"},
+    {file = "apis-core-0.15.0.tar.gz", hash = "sha256:7d5dd898f4e8cd7ecb6ef177e64548e52dfbef2c36f08210a7e83a802f683d3f"},
+    {file = "apis_core-0.15.0-py3-none-any.whl", hash = "sha256:243b341805fe85752e698e3722aa4e121b471f269d0930125c98d8cfdf37496c"},
 ]
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
     {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
+]
+asgiref = [
+    {file = "asgiref-3.3.1-py3-none-any.whl", hash = "sha256:5ee950735509d04eb673bd7f7120f8fa1c9e2df495394992c73234d526907e17"},
+    {file = "asgiref-3.3.1.tar.gz", hash = "sha256:7162a3cb30ab0609f1a4c95938fd73e8604f63bdba516a7f7d64b83ff09478f0"},
 ]
 astroid = [
     {file = "astroid-2.4.2-py3-none-any.whl", hash = "sha256:bc58d83eb610252fd8de6363e39d4f1d0619c894b0ed24603b881c02e64c7386"},
@@ -1923,17 +1930,13 @@ dephell-versioning = [
     {file = "dephell_versioning-0.1.2-py3-none-any.whl", hash = "sha256:28f611bd3ec1644e3d6972f901b9aa67a1fe2ed3fe57566f82afd9c43f5a335a"},
     {file = "dephell_versioning-0.1.2.tar.gz", hash = "sha256:9ba7636704af7bd64af5a64ab8efb482c8b0bf4868699722f5e2647763edf8e5"},
 ]
-diff-match-patch = [
-    {file = "diff-match-patch-20200713.tar.gz", hash = "sha256:da6f5a01aa586df23dfc89f3827e1cafbb5420be9d87769eeb079ddfd9477a18"},
-    {file = "diff_match_patch-20200713-py3-none-any.whl", hash = "sha256:8bf9d9c4e059d917b5c6312bac0c137971a32815ddbda9c682b949f2986b4d34"},
-]
 dj-database-url = [
     {file = "dj-database-url-0.5.0.tar.gz", hash = "sha256:4aeaeb1f573c74835b0686a2b46b85990571159ffc21aa57ecd4d1e1cb334163"},
     {file = "dj_database_url-0.5.0-py2.py3-none-any.whl", hash = "sha256:851785365761ebe4994a921b433062309eb882fedd318e1b0fcecc607ed02da9"},
 ]
 django = [
-    {file = "Django-2.2.17-py3-none-any.whl", hash = "sha256:558cb27930defd9a6042133258caf797b2d1dee233959f537e3dc475cb49bd7c"},
-    {file = "Django-2.2.17.tar.gz", hash = "sha256:cf5370a4d7765a9dd6d42a7b96b53c74f9446cd38209211304b210fe0404b861"},
+    {file = "Django-3.1.4-py3-none-any.whl", hash = "sha256:5c866205f15e7a7123f1eec6ab939d22d5bde1416635cab259684af66d8e48a2"},
+    {file = "Django-3.1.4.tar.gz", hash = "sha256:edb10b5c45e7e9c0fb1dc00b76ec7449aca258a39ffd613dbd078c51d19c9f03"},
 ]
 django-allow-cidr = [
     {file = "django-allow-cidr-0.3.1.tar.gz", hash = "sha256:d9a3b22c14e91c26ddd010c278ddf7e2c69a5421c862a3a3cd448ae57fd833e8"},
@@ -1983,10 +1986,6 @@ django-model-utils = [
 django-reversion = [
     {file = "django-reversion-3.0.8.tar.gz", hash = "sha256:49e9930f90322dc6a2754dd26144285cfcc1c5bd0c1c39ca95d5602c5054ae32"},
     {file = "django_reversion-3.0.8-py3-none-any.whl", hash = "sha256:9cfadeec2df37cb53d795ab79f6792f9eed8e70363dcf3a275dc19a58b971a8f"},
-]
-django-reversion-compare = [
-    {file = "django-reversion-compare-0.12.2.tar.gz", hash = "sha256:9ec6c764a2bcb2be52fa1b4ef4365f8226a89c7b572ab984afe24b76d6247b5f"},
-    {file = "django_reversion_compare-0.12.2-py3-none-any.whl", hash = "sha256:5ce8d402add477a3c38aae8335af22b3abdfffa83ef5333c06c865abb89e9cbd"},
 ]
 django-summernote = [
     {file = "django-summernote-0.8.11.6.tar.gz", hash = "sha256:c23dae35c287f0d3d1ff801654ace77c3c6836453162e87c7330710d74d2eb88"},
@@ -2276,6 +2275,10 @@ numpy = [
     {file = "numpy-1.19.4-cp39-cp39-win_amd64.whl", hash = "sha256:4377e10b874e653fe96985c05feed2225c912e328c8a26541f7fc600fb9c637b"},
     {file = "numpy-1.19.4-pp36-pypy36_pp73-manylinux2010_x86_64.whl", hash = "sha256:2a2740aa9733d2e5b2dfb33639d98a64c3b0f24765fed86b0fd2aec07f6a0a08"},
     {file = "numpy-1.19.4.zip", hash = "sha256:141ec3a3300ab89c7f2b0775289954d193cc8edb621ea05f99db9cb181530512"},
+]
+oebl-irs-workflow = [
+    {file = "oebl-irs-workflow-0.1.1.tar.gz", hash = "sha256:ba57f9690c589f3409f5e6639a6e988628e515de9b058efb22d671d560f32c0b"},
+    {file = "oebl_irs_workflow-0.1.1-py3-none-any.whl", hash = "sha256:bd0bf2d2a1e763866f73ddef38865ee9288c8963ab99201606124296565f797b"},
 ]
 packaging = [
     {file = "packaging-20.7-py2.py3-none-any.whl", hash = "sha256:eb41423378682dadb7166144a4926e443093863024de508ca5c9737d6bc08376"},
