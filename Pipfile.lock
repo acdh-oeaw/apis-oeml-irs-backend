@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b50774d795baa1d71a930afd0553b0df8653f70164a9007fa9a203e90746ad6b"
+            "sha256": "210744adf2093a03fa9aae8ca12c8d16d6bc2532ee1c4c64b0fcc17443575134"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -33,11 +33,11 @@
         },
         "apis-core": {
             "hashes": [
-                "sha256:243b341805fe85752e698e3722aa4e121b471f269d0930125c98d8cfdf37496c",
-                "sha256:7d5dd898f4e8cd7ecb6ef177e64548e52dfbef2c36f08210a7e83a802f683d3f"
+                "sha256:147936e65f5fc8f705d21e4440036c33bb5d663ebfbd3bee9b84ddf61523d427",
+                "sha256:c2f842c5ef09d5de38d1545ebd33629851d0b75498f9494acd97f3c8c08c530a"
             ],
             "index": "pypi",
-            "version": "==0.15.0"
+            "version": "==0.15.1"
         },
         "asgiref": {
             "hashes": [
@@ -302,11 +302,11 @@
         },
         "importlib-metadata": {
             "hashes": [
-                "sha256:6112e21359ef8f344e7178aa5b72dc6e62b38b0d008e6d3cb212c5b84df72013",
-                "sha256:b0c2d3b226157ae4517d9625decf63591461c66b3a808c2666d538946519d170"
+                "sha256:3314a7d37120371fd6b4eb91d46e28c062c5a9e113be14d2cc5620062f86e210",
+                "sha256:8f3c7e27824aa3283b384ee1f9238770e4fafe479150fa7012830dfae110e7d0"
             ],
             "markers": "python_version < '3.8'",
-            "version": "==3.1.1"
+            "version": "==3.2.0"
         },
         "importlib-resources": {
             "hashes": [
@@ -732,6 +732,15 @@
             ],
             "index": "pypi",
             "version": "==3.0.0"
+        },
+        "typing-extensions": {
+            "hashes": [
+                "sha256:7cb407020f00f7bfc3cb3e7881628838e69d8f3fcab2f64742a5e76b2f841918",
+                "sha256:99d4073b617d30288f569d3f13d2bd7548c3a7e4c8de87db09a9d29bb3a4a60c",
+                "sha256:dafc7639cde7f1b6e1acc0f457842a83e722ccca8eef5270af2d74792619a89f"
+            ],
+            "markers": "python_version < '3.8'",
+            "version": "==3.7.4.3"
         },
         "unicodecsv": {
             "hashes": [
