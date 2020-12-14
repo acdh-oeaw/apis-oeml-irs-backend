@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "210744adf2093a03fa9aae8ca12c8d16d6bc2532ee1c4c64b0fcc17443575134"
+            "sha256": "e6d140a5cf9980391d2a72e6161081487f46d4b8d64a2e1f008dbfc5a9955002"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -302,11 +302,11 @@
         },
         "importlib-metadata": {
             "hashes": [
-                "sha256:3314a7d37120371fd6b4eb91d46e28c062c5a9e113be14d2cc5620062f86e210",
-                "sha256:8f3c7e27824aa3283b384ee1f9238770e4fafe479150fa7012830dfae110e7d0"
+                "sha256:5c5a2720817414a6c41f0a49993908068243ae02c1635a228126519b509c8aed",
+                "sha256:bf792d480abbd5eda85794e4afb09dd538393f7d6e6ffef6e9f03d2014cf9450"
             ],
             "markers": "python_version < '3.8'",
-            "version": "==3.2.0"
+            "version": "==3.3.0"
         },
         "importlib-resources": {
             "hashes": [
@@ -444,11 +444,11 @@
         },
         "oebl-irs-workflow": {
             "hashes": [
-                "sha256:ba57f9690c589f3409f5e6639a6e988628e515de9b058efb22d671d560f32c0b",
-                "sha256:bd0bf2d2a1e763866f73ddef38865ee9288c8963ab99201606124296565f797b"
+                "sha256:c949d355a9f2074bc0c2355c2fbc3b84ba60bf32df9091114f31fab90f9dd79b",
+                "sha256:fa40335849dcc753957e503b0eac105298ebf4c5aa3e801589334c617763b503"
             ],
             "index": "pypi",
-            "version": "==0.1.1"
+            "version": "==0.1.2"
         },
         "pandas": {
             "hashes": [
