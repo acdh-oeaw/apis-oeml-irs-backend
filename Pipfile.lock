@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d128b8f39a2f80dca6709d66da6b1370b134031dad7c97f769331a018abafeca"
+            "sha256": "40f8cb8801550b8427c912ac836a3b62069790182319f43847901f05b6d77b94"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -453,11 +453,19 @@
         },
         "oebl-irs-workflow": {
             "hashes": [
-                "sha256:6d2ac93f73b6e8a12eafff37378ecf1c8077ab8b93ed3716ec2348665254b9ec",
-                "sha256:fd6aafca7d0a9388e2ad72883e37bf6d10fab508750f7c96ffabd67f9b85c555"
+                "sha256:142a56fd75c9815b16b78c943d3be610b8f6b262ab8f605bc7260dc51fc21c35",
+                "sha256:c71fb49b46e909542314ef39c775dbd6ef499fa9368388dece2241367fa4cf07"
             ],
             "index": "pypi",
-            "version": "==0.1.6"
+            "version": "==0.1.7"
+        },
+        "oebl-research-backend": {
+            "hashes": [
+                "sha256:4edf29c9e7781affb0e914d776a2b8b08de793dda40eaea32d8640965d4a737a",
+                "sha256:9334b49e30f5a5203095ed81f6d9d2a6b7db26250f47604a8afd85480f3588d4"
+            ],
+            "index": "pypi",
+            "version": "==0.1.2"
         },
         "pandas": {
             "hashes": [
