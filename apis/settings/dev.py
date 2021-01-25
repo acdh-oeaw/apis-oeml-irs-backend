@@ -72,9 +72,6 @@ LANGUAGE_CODE = "de"
 
 APIS_RELATIONS_FILTER_EXCLUDE += ["annotation", "annotation_set_relation"]
 
-REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"] = (
-    "rest_framework.authentication.TokenAuthentication",
-)
 
 LANGUAGE_CODE = "de"
 
