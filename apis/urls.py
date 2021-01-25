@@ -2,8 +2,12 @@ from django.conf import settings
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.urls import path
+from rest_framework.authtoken.views import obtain_auth_token
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
 from apis_core.apis_entities.api_views import GetEntityGeneric
+from oebl_irs_workflow.api_views import UserProfileViewset
+
 
 if "theme" in settings.INSTALLED_APPS:
     urlpatterns = [
@@ -58,4 +62,16 @@ if "oebl_irs_workflow" in settings.INSTALLED_APPS:
             include("oebl_irs_workflow.urls", namespace="oebl_irs_workflow"),
         )
     )
+
+
+if "oebl_research_backend" in settings.INSTALLED_APPS:
+    urlpatterns.append(
+        url(
+            r"^research/",
+            include("oebl_research_backend.urls", namespace="oebl_research_backend"),
+        )
+    )
+
+urlpatterns.append(path("api_login/", obtain_auth_token, name="api_token_auth"))
+urlpatterns.append(path("me/", UserProfileViewset))
 handler404 = "webpage.views.handler404"

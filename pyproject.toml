@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "oebl-irs-devops"
-version = "0.1.0"
+version = "0.1.1"
 description = "OEBL irs project for auto devops"
 authors = ["Matthias Schlögl <m.schloegl@gmail.com>"]
 license = "MIT"
@@ -49,7 +49,10 @@ acdh-django-charts = "^0.5.3"
 pandas = "0.25.3"
 django-allow-cidr = "^0.3.1"
 apis-core = "^0.15.1"
-oebl-irs-workflow = "^0.1.4"
+oebl-irs-workflow = "^0.1.7"
+django-celery-results = "^2.0.1"
+supervisor = "^4.2.1"
+oebl-research-backend = "^0.1.2"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
