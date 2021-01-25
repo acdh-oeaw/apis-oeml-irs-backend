@@ -1,5 +1,5 @@
 #!/bin/bash
-useradd -M celery
+#useradd -M celery
 python manage.py migrate --settings=apis.settings.dev
 supervisord -c celery_config/celery.conf
 supervisorctl start all
