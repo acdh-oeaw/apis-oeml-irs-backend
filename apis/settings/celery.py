@@ -6,7 +6,8 @@ from celery import Celery
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apis.settings.dev")
 
 app = Celery(
-    "oeblresearch", broker=f'pyamqp://{os.environ.get("OEBL_BROKER", "guest@0.0.0.0")}/'
+    "oeblresearch",
+    broker=f'pyamqp://{os.environ.get("OEBL_BROKER", "guest@10.42.0.13")}/',
 )
 
 # Using a string here means the worker doesn't have to serialize
