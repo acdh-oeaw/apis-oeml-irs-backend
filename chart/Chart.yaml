@@ -1,6 +1,6 @@
 annotations:
   category: Infrastructure
-apiVersion: v2
+apiVersion: v1
 appVersion: 3.8.11
 dependencies:
   - name: common
