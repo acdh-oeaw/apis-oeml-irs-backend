@@ -20,6 +20,8 @@ APIS_BASE_URI = "https://apis.acdh.oeaw.ac.at/"
 APIS_OEBL_BIO_COLLECTION = "ÖBL Biographie"
 CSRF_HEADER_NAME = "HTTP_X_CSRFTOKEN"
 
+CORS_ALLOW_METHODS = ("GET", "OPTIONS", "PUT", "POST")
+
 
 ALLOWED_HOSTS = re.sub(
     r"https?://",
