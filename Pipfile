@@ -8,7 +8,7 @@ python_version = "3.6"
 
 [packages]
 acdh-django-charts = "==0.*,>=0.5.3"
-apis-core = "==0.15.1"
+apis-core = "==0.*,>=0.15.1"
 celery = "==5.*,>=5.0.4"
 convertdate = "==2.*,>=2.3.0"
 dj-database-url = "==0.*,>=0.5.0"
@@ -30,7 +30,7 @@ djangorestframework = "==3.*,>=3.12.2"
 djangorestframework-csv = "==2.*,>=2.1.0"
 djangorestframework-jsonschema = "==0.*,>=0.1.1"
 djangorestframework-xml = "==2.*,>=2.0.0"
-drf-spectacular = "==0.11.1"
+drf-spectacular = "==0.*,>=0.11.1"
 gunicorn = "==20.*,>=20.0.4"
 jmespath = "==0.*,>=0.10.0"
 jsonschema = "==3.*,>=3.2.0"
@@ -49,10 +49,8 @@ tablib = "==3.*,>=3.0.0"
 unicodecsv = "==0.*,>=0.14.1"
 whitenoise = "==5.*,>=5.2.0"
 django-allow-cidr = "==0.*,>=0.3.1"
-oebl-irs-workflow = "==0.*,>=0.1.9"
 django-celery-results = "==2.*,>=2.0.1"
 supervisor = "==4.*,>=4.2.1"
-oebl-research-backend = "==0.*,>=0.1.4"
 
 [dev-packages]
 dephell = {version = "==0.*,>=0.8.3", extras = ["full"]}
