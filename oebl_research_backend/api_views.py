@@ -16,6 +16,7 @@ from .serializers import ListEntrySerializer, ListSerializer
         description="""Endpoint that allows to POST a list of lemmas to the research pipeline for processing.
         All additional fields not mentioned in the Schema are stored and retrieved as user specific fields.
         """,
+        methods=["POST"],
         request=inline_serializer(
             name="ListCreateAPIView",
             fields={
@@ -33,12 +34,13 @@ from .serializers import ListEntrySerializer, ListSerializer
                 )
             },
         ),
-        responses={200: inline_serializer(
+        responses={201: inline_serializer(many=False,
             name="ListCreateAPIViewResponse",
             fields={
                 "success": serializers.UUIDField()
             }
-        )}
+        ),
+        }
 )
 class LemmaResearchView(ListCreateAPIView):
     """APIView to process scraping requests
