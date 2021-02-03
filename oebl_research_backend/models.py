@@ -36,6 +36,7 @@ class ListEntry(models.Model):
     columns_scrape = models.JSONField(null=True, blank=True)
     columns_user = models.JSONField(null=True, blank=True)
     scrape = models.JSONField(null=True, blank=True)
+    deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{str(self.person)} - scrape {str(self.last_updated)}"

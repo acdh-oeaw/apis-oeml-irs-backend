@@ -1,4 +1,5 @@
 from rest_framework.generics import ListCreateAPIView
+from rest_framework.mixins import DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 from rest_framework import serializers
@@ -7,6 +8,7 @@ from rest_framework.response import Response
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 from drf_spectacular.utils import inline_serializer, extend_schema, extend_schema_view
+from rest_framework import status
 
 from .models import ListEntry, Person, List
 from .serializers import ListEntrySerializer, ListSerializer
@@ -42,19 +44,33 @@ from .serializers import ListEntrySerializer, ListSerializer
         ),
         }
 )
-class LemmaResearchView(ListCreateAPIView):
+class LemmaResearchView(viewsets.ModelViewSet):
     """APIView to process scraping requests
 
     Args:
         GenericAPIView ([type]): [description]
     """
 
-    queryset = ListEntry.objects.all()
+    queryset = ListEntry.objects.filter(deleted=False)
     serializer_class = ListEntrySerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'post', 'head', 'options', 'delete']
 
     def create(self, request):
         job_id = scrape.delay(request.data, request.user.pk)
         return Response({"success": job_id.id})
+
+    def destroy(self, request, *arg, **kwargs):
+        ent = ListEntry.objects.filter(pk=kwargs["pk"])
+        if ent.count() == 0:
+            return Response(status.HTTP_404_NOT_FOUND)
+        else:
+            for e in ent:
+                e.deleted = True
+                e.save()
+            return Response(status.HTTP_204_NO_CONTENT)
+
+    
 
 
 """     def get(self, request, crawlerid):

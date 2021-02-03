@@ -5,12 +5,9 @@ from .api_views import LemmaResearchView, ListViewset
 
 app_name = "oebl_research_backend"
 
-urlpatterns = [
-    path(r"lemmaresearch/", LemmaResearchView.as_view()),
-    path(r"lemmaresearch/<crawlerid>/", LemmaResearchView),
-]
 
 router = routers.DefaultRouter()
 router.register(r"listresearch", ListViewset)
+router.register(r"lemmaresearch", LemmaResearchView)
 
-urlpatterns += router.urls
+urlpatterns = router.urls
