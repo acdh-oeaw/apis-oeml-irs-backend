@@ -33,8 +33,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = "__all__"
-
+        exclude = ["password", "id"]
 
 class UserSerializer(serializers.ModelSerializer):
     userId = serializers.IntegerField(source="pk")
