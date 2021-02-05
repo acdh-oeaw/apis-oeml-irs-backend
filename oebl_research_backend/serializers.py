@@ -28,6 +28,32 @@ class ListEntrySerializer(serializers.ModelSerializer):
     lastName = serializers.CharField(source="person.name")
     list = ListSerializerLimited()
 
+    def update(self, instance, validated_data):
+        instance.selected = validated_data.get("selected", instance.selected)
+        instance.columns_scrape = validated_data.get("columns_scrape", instance.columns_scrape)
+        instance.columns_user = validated_data.get("columns_user", instance.columns_user)
+        if "list" in self.initial_data.keys():
+            if "id" in self.initial_data["list"].keys():
+                instance.list_id = self.initial_data["list"]["id"]
+            else:
+                lst = List.objects.create(**self.initial_data["list"])
+                instance.list_id = lst.pk
+        instance.save()
+        if "gnd" in self.initial_data.keys():
+            changed = False
+            for u in instance.person.uris:
+                if "d-nb.info" in u:
+                    if u not in  [f"https://d-nb.info/gnd/{x}/" for x in self.initial_data["gnd"]]:
+                        instance.person.uris.remove(u)
+                        changed = True
+            for gnd in self.initial_data["gnd"]:
+                if f"https://d-nb.info/gnd/{gnd}/" not in instance.person.uris:
+                    instance.person.uris.append(f"https://d-nb.info/gnd/{gnd}/")
+                    changed = True
+            if changed:
+                instance.person.save()
+        return instance
+
     def get_gnd(self, object) -> gndType:
         if object.person.uris is not None:
             res = []

@@ -54,7 +54,7 @@ class LemmaResearchView(viewsets.ModelViewSet):
     queryset = ListEntry.objects.filter(deleted=False)
     serializer_class = ListEntrySerializer
     permission_classes = [IsAuthenticated]
-    http_method_names = ['get', 'post', 'head', 'options', 'delete']
+    http_method_names = ['get', 'post', 'head', 'options', 'delete', 'update', 'patch']
 
     def create(self, request):
         job_id = scrape.delay(request.data, request.user.pk)
