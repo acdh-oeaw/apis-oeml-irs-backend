@@ -9,7 +9,11 @@ from oebl_irs_workflow.serializers import EditorSerializer
 gndType = ListType[str]
 
 class ListSerializer(serializers.ModelSerializer):
-    editor = EditorSerializer()
+    editor = EditorSerializer(required=False)
+
+    def create(self, validated_data):
+        lst = List.objects.create(title=validated_data.get("title"), editor_id=self.context["request"].user.pk)
+        return lst
 
     class Meta:
         model = List

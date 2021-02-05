@@ -135,6 +135,17 @@ class LemmaResearchView(viewsets.ModelViewSet):
         return Response({"count": len(resfin), "results": resfin}) """
 
 
+@extend_schema(
+        description="""Endpoint that allows to create a Research Lemma List
+        """,
+        methods=["POST"],
+        request=inline_serializer(
+            name="CreateResearchListAPIView",
+            fields={
+                "title": serializers.CharField(required=True),
+            },
+        ),
+)
 class ListViewset(viewsets.ModelViewSet):
 
     queryset = List.objects.all()
