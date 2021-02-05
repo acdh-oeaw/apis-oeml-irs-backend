@@ -277,5 +277,4 @@ def scrape(self, obj, user_id, list_title=None, scrapes=default_scrapes, wiki=Tr
         for entry in obj_scrape
         for scr in scrapes
     )()
-    print(res)
-    return f"started job for {obj['email']}"
+    return f"started job for {user_id}"
