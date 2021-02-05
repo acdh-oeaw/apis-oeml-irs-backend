@@ -36,6 +36,8 @@ class ListEntrySerializer(serializers.ModelSerializer):
             if "id" in self.initial_data["list"].keys():
                 instance.list_id = self.initial_data["list"]["id"]
             else:
+                if "editor" in self.initial_data["list"].keys():
+                    self.initial_data["list"]["editor_id"] = self.initial_data["list"].pop("editor")
                 lst = List.objects.create(**self.initial_data["list"])
                 instance.list_id = lst.pk
         instance.save()

@@ -10,10 +10,30 @@ from bson.json_util import dumps
 from drf_spectacular.utils import inline_serializer, extend_schema, extend_schema_view
 from rest_framework import status
 
-from .models import ListEntry, Person, List
+from .models import ListEntry, Person, List, Editor
 from .serializers import ListEntrySerializer, ListSerializer
 
 
+@extend_schema(
+        description="""Endpoint that allows to POST a list of lemmas to the research pipeline for processing.
+        All additional fields not mentioned in the Schema are stored and retrieved as user specific fields.
+        """,
+        methods=["PATCH"],
+        request=inline_serializer(
+            name="LemmaResearchPatchAPIView",
+                    fields={
+                        "list": inline_serializer(name="LemmaresearchEditorSerializer", many=False, fields={"id": serializers.PrimaryKeyRelatedField(queryset=List.objects.all(), read_only=False, required=False),
+                            "editor": serializers.PrimaryKeyRelatedField(queryset=Editor.objects.all(), read_only=False, required=False),
+                            "title": serializers.CharField(required=False),
+                        },),
+                        "gnd": serializers.ListField(child=serializers.URLField(), required=False),
+                        "firstName": serializers.CharField(required=False),
+                        "lastName": serializers.CharField(required=False),
+                        "dateOfBirth": serializers.DateField(required=False),
+                        "dateOfDeath": serializers.DateField(required=False),
+                    },
+                )
+        )
 @extend_schema(
         description="""Endpoint that allows to POST a list of lemmas to the research pipeline for processing.
         All additional fields not mentioned in the Schema are stored and retrieved as user specific fields.
