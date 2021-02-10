@@ -10,6 +10,22 @@ import math
 
 from django.conf import settings
 from .models import Person, List, ListEntry
+from apis_core.helper_functions.RDFParser import RDFParser
+from oebl_irs_workflow.models import Lemma, LemmaStatus, IssueLemma, Issue
+
+
+def create_child_from_parent_model(child_cls, parent_obj, init_values: dict):
+    attrs = {}
+    for field in parent_obj._meta._get_fields(reverse=False, include_parents=True):
+        if field.attname not in attrs:
+            attrs[field.attname] = getattr(parent_obj, field.attname)
+    attrs[child_cls._meta.parents[parent_obj.__class__].name] = parent_obj
+    attrs.update(init_values)
+    print(attrs)
+    return child_cls(**attrs)
+
+
+# create_child_from_parent_model(ExtendedUser, auth_user, {})
 
 
 @shared_task(time_limit=500)
@@ -233,12 +249,19 @@ system_cols = ["id", "gnd", "firstName", "lastName"]
 
 
 @shared_task(time_limit=2000, bind=True)
-def scrape(self, obj, user_id, list_title=None, scrapes=default_scrapes, wiki=True):
+def scrape(self, obj, user_id, list_id, scrapes=default_scrapes, wiki=True):
     scrape_id = self.request.id
     obj_scrape = []
+    lst = List.objects.get(pk=list_id)
     for idx, ent in enumerate(obj["lemmas"]):
         test_gnd = False
-        ent_dict = {"first_name": ent["firstName"], "name": ent["lastName"], "uris": []}
+        ent_dict = {
+            "first_name": ent.get("firstName", "-"),
+            "name": ent.get("lastName", "-"),
+            "date_of_birth": ent.get("dateOfBirth", None),
+            "date_of_death": ent.get("dateOfDeath", None),
+            "uris": [],
+        }
         if "gnd" in ent.keys():
             for g in ent["gnd"]:
                 ent_dict["uris"].append(f"https://d-nb.info/gnd/{g}/")
@@ -255,9 +278,6 @@ def scrape(self, obj, user_id, list_title=None, scrapes=default_scrapes, wiki=Tr
         else:
             list_entry_dict["source_id"] = idx
         pers, created = Person.objects.get_or_create(**ent_dict)
-        lst, c2 = List.objects.get_or_create(
-            title=f"List {datetime.datetime.now().strftime('%c')}", editor_id=user_id
-        )
         list_entry_dict["person_id"] = pers.pk
         list_entry_dict["list_id"] = lst.pk
         list_entry_dict["columns_scrape"] = {"obv": [], "wikipedia": [], "wikidata": []}
@@ -268,7 +288,7 @@ def scrape(self, obj, user_id, list_title=None, scrapes=default_scrapes, wiki=Tr
     res = group(
         scr.s(
             entry[0],
-            f"{entry[1]['lastName']}, {entry[1]['firstName']}",
+            f"{entry[1].get('lastName', '-')}, {entry[1].get('firstName', '-')}",
             entry[2].pk,
             entry[3].pk,
             scrape_id,
@@ -278,3 +298,50 @@ def scrape(self, obj, user_id, list_title=None, scrapes=default_scrapes, wiki=Tr
         for scr in scrapes
     )()
     return f"started job for {user_id}"
+
+
+class EntityAlreadyExists(Exception):
+    pass
+
+
+@shared_task(time_limit=500)
+def create_new_workflow_lemma(
+    editor_id, research_lemma_id, gnd=None, person_attrb={}, issue_id=None
+):
+    if gnd:
+        pers = RDFParser(gnd, "Person").save()
+        if not pers:
+            raise EntityAlreadyExists(f"{gnd} already in db")
+        workflow_lemma = create_child_from_parent_model(Lemma, pers, person_attrb)
+    else:
+        workflow_lemma = Lemma.objects.create(**person_attrb)
+    lemma_status, created = LemmaStatus.objects.get_or_create(name="angelegt")
+    lemma_issue = {
+        "status_id": lemma_status.pk,
+        "editor_id": editor_id,
+        "issue_id": issue_id,
+        "lemma_id": workflow_lemma.pk,
+    }
+    il = IssueLemma.objects.create(**lemma_issue)
+    research_lemma = Person.objects.get(pk=research_lemma_id)
+    research_lemma.irs_person = workflow_lemma
+    research_lemma.save()
+    return f"created IssueLemma {il.pk}"
+
+
+@shared_task(time_limit=500)
+def move_research_lemmas_to_workflow(editor_id, lst_research_lemmas, issue=None):
+    if issue:
+        issue1, created = Issue.objects.get_or_create(**issue)
+        issue_id = issue1.pk
+    for lm in lst_research_lemmas:
+        le = ListEntry.objects.get(pk=lm)
+        gnd = False
+        for uri in le.person.uris:
+            if "d-nb.info" in uri:
+                gnd = uri
+        person_attrb = le.get_dict()
+        create_new_workflow_lemma.delay(
+            editor_id, le.person_id, gnd, person_attrb, issue_id
+        )
+    return f"moved lemmas to "

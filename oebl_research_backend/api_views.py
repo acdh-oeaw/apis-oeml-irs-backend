@@ -15,54 +15,68 @@ from .serializers import ListEntrySerializer, ListSerializer
 
 
 @extend_schema(
-        description="""Endpoint that allows to POST a list of lemmas to the research pipeline for processing.
+    description="""Endpoint that allows to POST a list of lemmas to the research pipeline for processing.
         All additional fields not mentioned in the Schema are stored and retrieved as user specific fields.
         """,
-        methods=["PATCH"],
-        request=inline_serializer(
-            name="LemmaResearchPatchAPIView",
-                    fields={
-                        "list": inline_serializer(name="LemmaresearchEditorSerializer", many=False, fields={"id": serializers.PrimaryKeyRelatedField(queryset=List.objects.all(), read_only=False, required=False),
-                            "editor": serializers.PrimaryKeyRelatedField(queryset=Editor.objects.all(), read_only=False, required=False),
-                            "title": serializers.CharField(required=False),
-                        },),
-                        "gnd": serializers.ListField(child=serializers.URLField(), required=False),
-                        "firstName": serializers.CharField(required=False),
-                        "lastName": serializers.CharField(required=False),
-                        "dateOfBirth": serializers.DateField(required=False),
-                        "dateOfDeath": serializers.DateField(required=False),
-                    },
-                )
-        )
+    methods=["PATCH"],
+    request=inline_serializer(
+        name="LemmaResearchPatchAPIView",
+        fields={
+            "list": inline_serializer(
+                name="LemmaresearchEditorSerializer",
+                many=False,
+                fields={
+                    "id": serializers.PrimaryKeyRelatedField(
+                        queryset=List.objects.all(), read_only=False, required=False
+                    ),
+                    "editor": serializers.PrimaryKeyRelatedField(
+                        queryset=Editor.objects.all(), read_only=False, required=False
+                    ),
+                    "title": serializers.CharField(required=False),
+                },
+            ),
+            "gnd": serializers.ListField(child=serializers.URLField(), required=False),
+            "firstName": serializers.CharField(required=False),
+            "lastName": serializers.CharField(required=False),
+            "dateOfBirth": serializers.DateField(required=False),
+            "dateOfDeath": serializers.DateField(required=False),
+        },
+    ),
+)
 @extend_schema(
-        description="""Endpoint that allows to POST a list of lemmas to the research pipeline for processing.
+    description="""Endpoint that allows to POST a list of lemmas to the research pipeline for processing.
         All additional fields not mentioned in the Schema are stored and retrieved as user specific fields.
         """,
-        methods=["POST"],
-        request=inline_serializer(
-            name="ListCreateAPIView",
-            fields={
-                "list": serializers.PrimaryKeyRelatedField(queryset=List.objects.all(), read_only=False, required=False),
-                "lemmas": inline_serializer(
-                    name="LemmasCreateSerializer",
-                    fields={
-                        "gnd": serializers.ListField(child=serializers.URLField(), required=False),
-                        "firstName": serializers.CharField(required=False),
-                        "lastName": serializers.CharField(required=False),
-                        "dateOfBirth": serializers.DateField(required=False),
-                        "dateOfDeath": serializers.DateField(required=False),
-                    },
-                    many=True
-                )
-            },
-        ),
-        responses={201: inline_serializer(many=False,
+    methods=["POST"],
+    request=inline_serializer(
+        name="ListCreateAPIView",
+        fields={
+            "listId": serializers.PrimaryKeyRelatedField(
+                queryset=List.objects.all(), read_only=False, required=True
+            ),
+            "lemmas": inline_serializer(
+                name="LemmasCreateSerializer",
+                fields={
+                    "gnd": serializers.ListField(
+                        child=serializers.URLField(), required=False
+                    ),
+                    "selected": serializers.BooleanField(default=False),
+                    "firstName": serializers.CharField(required=False),
+                    "lastName": serializers.CharField(required=False),
+                    "dateOfBirth": serializers.DateField(required=False),
+                    "dateOfDeath": serializers.DateField(required=False),
+                },
+                many=True,
+            ),
+        },
+    ),
+    responses={
+        201: inline_serializer(
+            many=False,
             name="ListCreateAPIViewResponse",
-            fields={
-                "success": serializers.UUIDField()
-            }
+            fields={"success": serializers.UUIDField()},
         ),
-        }
+    },
 )
 class LemmaResearchView(viewsets.ModelViewSet):
     """APIView to process scraping requests
@@ -74,11 +88,13 @@ class LemmaResearchView(viewsets.ModelViewSet):
     queryset = ListEntry.objects.filter(deleted=False)
     serializer_class = ListEntrySerializer
     permission_classes = [IsAuthenticated]
-    http_method_names = ['get', 'post', 'head', 'options', 'delete', 'update', 'patch']
+    http_method_names = ["get", "post", "head", "options", "delete", "update", "patch"]
 
     def create(self, request):
-        job_id = scrape.delay(request.data, request.user.pk)
+        job_id = scrape.delay(request.data, request.user.pk, request.data["listId"])
         return Response({"success": job_id.id})
+
+    # def update(self, request):
 
     def destroy(self, request, *arg, **kwargs):
         ent = ListEntry.objects.filter(pk=kwargs["pk"])
@@ -89,8 +105,6 @@ class LemmaResearchView(viewsets.ModelViewSet):
                 e.deleted = True
                 e.save()
             return Response(status.HTTP_204_NO_CONTENT)
-
-    
 
 
 """     def get(self, request, crawlerid):
@@ -136,15 +150,15 @@ class LemmaResearchView(viewsets.ModelViewSet):
 
 
 @extend_schema(
-        description="""Endpoint that allows to create a Research Lemma List
+    description="""Endpoint that allows to create a Research Lemma List
         """,
-        methods=["POST"],
-        request=inline_serializer(
-            name="CreateResearchListAPIView",
-            fields={
-                "title": serializers.CharField(required=True),
-            },
-        ),
+    methods=["POST"],
+    request=inline_serializer(
+        name="CreateResearchListAPIView",
+        fields={
+            "title": serializers.CharField(required=True),
+        },
+    ),
 )
 class ListViewset(viewsets.ModelViewSet):
 

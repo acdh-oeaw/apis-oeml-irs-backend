@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from oebl_irs_workflow.models import Person as ResearchPerson, Editor
+from oebl_irs_workflow.models import Lemma as ResearchPerson, Editor
 
 
 class Person(models.Model):
@@ -40,3 +40,11 @@ class ListEntry(models.Model):
 
     def __str__(self):
         return f"{str(self.person)} - scrape {str(self.last_updated)}"
+
+    def get_dict(self):
+        res = {}
+        res["name"] = self.person.get("name", None)
+        res["first_name"] = self.person.get("first_name", None)
+        res["start_date"] = self.person.get("date_of_birth", None)
+        res["end_date"] = self.person.get("date_of_death", None)
+        return res
