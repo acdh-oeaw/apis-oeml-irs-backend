@@ -280,6 +280,7 @@ def scrape(self, obj, user_id, list_id, scrapes=default_scrapes, wiki=True):
         pers, created = Person.objects.get_or_create(**ent_dict)
         list_entry_dict["person_id"] = pers.pk
         list_entry_dict["list_id"] = lst.pk
+        list_entry_dict["selected"] = ent.get("selected", False)
         list_entry_dict["columns_scrape"] = {"obv": [], "wikipedia": [], "wikidata": []}
         list_entry_dict["scrape"] = {"obv": [], "wikipedia": [], "wikidata": []}
         list_entry = ListEntry.objects.create(**list_entry_dict)

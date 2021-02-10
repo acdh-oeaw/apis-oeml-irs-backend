@@ -8,19 +8,22 @@ from oebl_irs_workflow.serializers import EditorSerializer
 
 gndType = ListType[str]
 
+
 class ListSerializer(serializers.ModelSerializer):
     editor = EditorSerializer(required=False)
 
     def create(self, validated_data):
-        lst = List.objects.create(title=validated_data.get("title"), editor_id=self.context["request"].user.pk)
+        lst = List.objects.create(
+            title=validated_data.get("title"), editor_id=self.context["request"].user.pk
+        )
         return lst
 
     class Meta:
         model = List
         fields = "__all__"
 
-class ListSerializerLimited(serializers.ModelSerializer):
 
+class ListSerializerLimited(serializers.ModelSerializer):
     class Meta:
         model = List
         fields = ["id", "title", "editor"]
@@ -34,27 +37,37 @@ class ListEntrySerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.selected = validated_data.get("selected", instance.selected)
-        instance.columns_scrape = validated_data.get("columns_scrape", instance.columns_scrape)
-        instance.columns_user = validated_data.get("columns_user", instance.columns_user)
+        instance.columns_scrape = validated_data.get(
+            "columns_scrape", instance.columns_scrape
+        )
+        instance.columns_user = validated_data.get(
+            "columns_user", instance.columns_user
+        )
         if "list" in self.initial_data.keys():
             if "id" in self.initial_data["list"].keys():
                 instance.list_id = self.initial_data["list"]["id"]
             else:
                 if "editor" in self.initial_data["list"].keys():
-                    self.initial_data["list"]["editor_id"] = self.initial_data["list"].pop("editor")
+                    self.initial_data["list"]["editor_id"] = self.initial_data[
+                        "list"
+                    ].pop("editor")
                 lst = List.objects.create(**self.initial_data["list"])
                 instance.list_id = lst.pk
         instance.save()
         if "gnd" in self.initial_data.keys():
             changed = False
+            scrape_triggered = False
             for u in instance.person.uris:
                 if "d-nb.info" in u:
-                    if u not in  [f"https://d-nb.info/gnd/{x}/" for x in self.initial_data["gnd"]]:
+                    if u not in [
+                        f"https://d-nb.info/gnd/{x}/" for x in self.initial_data["gnd"]
+                    ]:
                         instance.person.uris.remove(u)
                         changed = True
             for gnd in self.initial_data["gnd"]:
                 if f"https://d-nb.info/gnd/{gnd}/" not in instance.person.uris:
                     instance.person.uris.append(f"https://d-nb.info/gnd/{gnd}/")
+                    scrape_triggered = True
                     changed = True
             if changed:
                 instance.person.save()
@@ -74,11 +87,10 @@ class ListEntrySerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "gnd",
+            "selected",
             "list",
             "firstName",
             "lastName",
             "columns_user",
             "columns_scrape",
         ]
-
-
