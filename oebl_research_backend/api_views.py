@@ -35,6 +35,7 @@ from .serializers import ListEntrySerializer, ListSerializer
                     "title": serializers.CharField(required=False),
                 },
             ),
+            "selected": serializers.BooleanField(default=False),
             "gnd": serializers.ListField(child=serializers.URLField(), required=False),
             "firstName": serializers.CharField(required=False),
             "lastName": serializers.CharField(required=False),

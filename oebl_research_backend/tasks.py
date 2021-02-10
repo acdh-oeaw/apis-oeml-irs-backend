@@ -7,6 +7,8 @@ import time
 import random
 import os
 import math
+from dateutil.parser import parse as parse_date
+from typing import Union
 
 from django.conf import settings
 from .models import Person, List, ListEntry
@@ -245,7 +247,18 @@ def get_wikidata_records(gnd, name, pers_id, listentry_id, scrape_id, *args, **k
 
 default_scrapes = [get_wikidata_records, get_obv_records]
 scrapes_names = ["obv", "wikipedia", "wikidata"]
-system_cols = ["id", "gnd", "firstName", "lastName"]
+system_cols = ["id", "gnd", "firstName", "lastName", "dateOfBirth", "dateOfDeath"]
+
+
+def normalize_date(date: Union[str, None]) -> Union[datetime.date, None]:
+    if date is None:
+        return None
+    else:
+        res = parse_date(date)
+        if isinstance(res, datetime.date):
+            return res
+        else:
+            return None
 
 
 @shared_task(time_limit=2000, bind=True)
@@ -258,8 +271,8 @@ def scrape(self, obj, user_id, list_id, scrapes=default_scrapes, wiki=True):
         ent_dict = {
             "first_name": ent.get("firstName", "-"),
             "name": ent.get("lastName", "-"),
-            "date_of_birth": ent.get("dateOfBirth", None),
-            "date_of_death": ent.get("dateOfDeath", None),
+            "date_of_birth": normalize_date(ent.get("dateOfBirth", None)),
+            "date_of_death": normalize_date(ent.get("dateOfDeath", None)),
             "uris": [],
         }
         if "gnd" in ent.keys():

@@ -33,6 +33,8 @@ class ListEntrySerializer(serializers.ModelSerializer):
     gnd = serializers.SerializerMethodField(method_name="get_gnd")
     firstName = serializers.CharField(source="person.first_name")
     lastName = serializers.CharField(source="person.name")
+    dateOfBirth = serializers.DateField(source="person.date_of_birth")
+    dateOfDeath = serializers.DateField(source="person.date_of_death")
     list = ListSerializerLimited()
 
     def update(self, instance, validated_data):
@@ -91,6 +93,8 @@ class ListEntrySerializer(serializers.ModelSerializer):
             "list",
             "firstName",
             "lastName",
+            "dateOfBirth",
+            "dateOfDeath",
             "columns_user",
             "columns_scrape",
         ]
