@@ -69,7 +69,7 @@ class ListEntrySerializer(serializers.ModelSerializer):
             for gnd in self.initial_data["gnd"]:
                 if f"https://d-nb.info/gnd/{gnd}/" not in instance.person.uris:
                     instance.person.uris.append(f"https://d-nb.info/gnd/{gnd}/")
-                    scrape_triggered = True
+                    instance._update_scrape_triggered = True
                     changed = True
             if changed:
                 instance.person.save()

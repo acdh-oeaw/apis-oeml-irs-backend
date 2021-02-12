@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 from drf_spectacular.utils import inline_serializer, extend_schema, extend_schema_view
+from drf_spectacular.types import OpenApiTypes
 from rest_framework import status
 
 from .models import ListEntry, Person, List, Editor
@@ -43,6 +44,48 @@ from .serializers import ListEntrySerializer, ListSerializer
             "dateOfDeath": serializers.DateField(required=False),
         },
     ),
+    responses={
+        201: inline_serializer(
+            many=False,
+            name="ListPatchAPIViewResponse",
+            fields={
+                "success": serializers.UUIDField(),
+                "instance": inline_serializer(
+                    many=False,
+                    name="ListPatchAPIViewResponseInstance",
+                    fields={
+                        "list": inline_serializer(
+                            name="LemmaresearchEditorSerializer",
+                            many=False,
+                            fields={
+                                "id": serializers.PrimaryKeyRelatedField(
+                                    queryset=List.objects.all(),
+                                    read_only=False,
+                                    required=False,
+                                ),
+                                "editor": serializers.PrimaryKeyRelatedField(
+                                    queryset=Editor.objects.all(),
+                                    read_only=False,
+                                    required=False,
+                                ),
+                                "title": serializers.CharField(required=False),
+                            },
+                        ),
+                        "selected": serializers.BooleanField(default=False),
+                        "gnd": serializers.ListField(
+                            child=serializers.URLField(), required=False
+                        ),
+                        "firstName": serializers.CharField(required=False),
+                        "lastName": serializers.CharField(required=False),
+                        "dateOfBirth": serializers.DateField(required=False),
+                        "dateOfDeath": serializers.DateField(required=False),
+                        "columns_user": OpenApiTypes.OBJECT,
+                        "columns_scrape": OpenApiTypes.OBJECT,
+                    },
+                ),
+            },
+        ),
+    },
 )
 @extend_schema(
     description="""Endpoint that allows to POST a list of lemmas to the research pipeline for processing.
@@ -95,7 +138,33 @@ class LemmaResearchView(viewsets.ModelViewSet):
         job_id = scrape.delay(request.data, request.user.pk, request.data["listId"])
         return Response({"success": job_id.id})
 
-    # def update(self, request):
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, "_prefetched_objects_cache", None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        if instance._update_scrape_triggered:
+            job_id = scrape.delay(
+                {
+                    "lemmas": [
+                        serializer.data,
+                    ]
+                },
+                request.user.pk,
+                serializer.data["list"]["id"],
+                update=instance.pk,
+                gnd_job=serializer.data["gnd"],
+            )
+            return Response({"success": job_id.id, "instance": serializer.data})
+        else:
+            return Response({"success": None, "instance": serializer.data})
 
     def destroy(self, request, *arg, **kwargs):
         ent = ListEntry.objects.filter(pk=kwargs["pk"])

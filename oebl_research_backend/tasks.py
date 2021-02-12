@@ -9,6 +9,7 @@ import os
 import math
 from dateutil.parser import parse as parse_date
 from typing import Union
+import re
 
 from django.conf import settings
 from .models import Person, List, ListEntry
@@ -262,43 +263,64 @@ def normalize_date(date: Union[str, None]) -> Union[datetime.date, None]:
 
 
 @shared_task(time_limit=2000, bind=True)
-def scrape(self, obj, user_id, list_id, scrapes=default_scrapes, wiki=True):
+def scrape(
+    self,
+    obj,
+    user_id,
+    list_id,
+    scrapes=default_scrapes,
+    wiki=True,
+    update=False,
+    gnd_job=False,
+):
     scrape_id = self.request.id
     obj_scrape = []
     lst = List.objects.get(pk=list_id)
     for idx, ent in enumerate(obj["lemmas"]):
-        test_gnd = False
-        ent_dict = {
-            "first_name": ent.get("firstName", "-"),
-            "name": ent.get("lastName", "-"),
-            "date_of_birth": normalize_date(ent.get("dateOfBirth", None)),
-            "date_of_death": normalize_date(ent.get("dateOfDeath", None)),
-            "uris": [],
-        }
-        if "gnd" in ent.keys():
-            for g in ent["gnd"]:
-                ent_dict["uris"].append(f"https://d-nb.info/gnd/{g}/")
-            if len(ent_dict["uris"]) == 1:
-                test_gnd = True
-        list_entry_dict = dict()
-        dict_user_cols = {}
-        for k, v in ent.items():
-            if k not in system_cols:
-                dict_user_cols[k] = v
-        list_entry_dict["columns_user"] = dict_user_cols
-        if "id" in ent.keys():
-            list_entry_dict["source_id"] = ent["id"]
-        else:
-            list_entry_dict["source_id"] = idx
-        pers, created = Person.objects.get_or_create(**ent_dict)
-        list_entry_dict["person_id"] = pers.pk
-        list_entry_dict["list_id"] = lst.pk
-        list_entry_dict["selected"] = ent.get("selected", False)
-        list_entry_dict["columns_scrape"] = {"obv": [], "wikipedia": [], "wikidata": []}
-        list_entry_dict["scrape"] = {"obv": [], "wikipedia": [], "wikidata": []}
-        list_entry = ListEntry.objects.create(**list_entry_dict)
+        if not update:
+            test_gnd = False
+            ent_dict = {
+                "first_name": ent.get("firstName", "-"),
+                "name": ent.get("lastName", "-"),
+                "date_of_birth": normalize_date(ent.get("dateOfBirth", None)),
+                "date_of_death": normalize_date(ent.get("dateOfDeath", None)),
+                "uris": [],
+            }
+            if "gnd" in ent.keys():
+                gnds = []
+                for g in ent["gnd"]:
+                    ent_dict["uris"].append(f"https://d-nb.info/gnd/{g}/")
+                    gnds.append(g)
+                if len(gnds) == 1:
+                    test_gnd = True
+            list_entry_dict = dict()
+            dict_user_cols = {}
+            for k, v in ent.items():
+                if k not in system_cols:
+                    dict_user_cols[k] = v
+            list_entry_dict["columns_user"] = dict_user_cols
+            if "id" in ent.keys():
+                list_entry_dict["source_id"] = ent["id"]
+            else:
+                list_entry_dict["source_id"] = idx
+            pers, created = Person.objects.get_or_create(**ent_dict)
+            list_entry_dict["person_id"] = pers.pk
+            list_entry_dict["list_id"] = lst.pk
+            list_entry_dict["selected"] = ent.get("selected", False)
+            list_entry_dict["columns_scrape"] = {
+                "obv": [],
+                "wikipedia": [],
+                "wikidata": [],
+            }
+            list_entry_dict["scrape"] = {"obv": [], "wikipedia": [], "wikidata": []}
+            list_entry = ListEntry.objects.create(**list_entry_dict)
+        if update:
+            list_entry = ListEntry.objects.get(pk=update)
+            pers = list_entry.person
+            gnds = gnd_job
+            test_gnd = len(gnds) == 1
         if test_gnd:
-            obj_scrape.append((ent["gnd"][0], ent, pers, list_entry))
+            obj_scrape.append((gnds[0], ent, pers, list_entry))
     res = group(
         scr.s(
             entry[0],
