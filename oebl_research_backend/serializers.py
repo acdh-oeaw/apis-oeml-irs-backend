@@ -35,7 +35,7 @@ class ListEntrySerializer(serializers.ModelSerializer):
     lastName = serializers.CharField(source="person.name")
     dateOfBirth = serializers.DateField(source="person.date_of_birth")
     dateOfDeath = serializers.DateField(source="person.date_of_death")
-    list = ListSerializerLimited()
+    list = ListSerializerLimited(required=False, allow_null=True)
 
     def update(self, instance, validated_data):
         instance.selected = validated_data.get("selected", instance.selected)
@@ -46,7 +46,9 @@ class ListEntrySerializer(serializers.ModelSerializer):
             "columns_user", instance.columns_user
         )
         if "list" in self.initial_data.keys():
-            if "id" in self.initial_data["list"].keys():
+            if self.initial_data["list"] is None:
+                instance.list_id = None
+            elif "id" in self.initial_data["list"].keys():
                 instance.list_id = self.initial_data["list"]["id"]
             else:
                 if "editor" in self.initial_data["list"].keys():
