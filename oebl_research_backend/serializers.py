@@ -71,8 +71,18 @@ class ListEntrySerializer(serializers.ModelSerializer):
                     instance.person.uris.append(f"https://d-nb.info/gnd/{gnd}/")
                     instance._update_scrape_triggered = True
                     changed = True
-            if changed:
-                instance.person.save()
+        pers_mapping = {
+            "firstName": "first_name",
+            "lastName": "name",
+            "dateOfBirth": "date_of_birth",
+            "dateOfDeath": "date_of_death",
+        }
+        for pers_field, pers_map in pers_mapping.items():
+            if pers_field in self.initial_data.keys():
+                setattr(instance.person, pers_map, self.initial_data[pers_field])
+                changed = True
+        if changed:
+            instance.person.save()
         return instance
 
     def get_gnd(self, object) -> gndType:
