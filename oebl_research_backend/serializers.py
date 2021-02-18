@@ -58,8 +58,8 @@ class ListEntrySerializer(serializers.ModelSerializer):
                 lst = List.objects.create(**self.initial_data["list"])
                 instance.list_id = lst.pk
         instance.save()
+        changed = False
         if "gnd" in self.initial_data.keys():
-            changed = False
             scrape_triggered = False
             for u in instance.person.uris:
                 if "d-nb.info" in u:
