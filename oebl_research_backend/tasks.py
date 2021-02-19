@@ -15,6 +15,7 @@ from django.conf import settings
 from .models import Person, List, ListEntry
 from apis_core.helper_functions.RDFParser import RDFParser
 from oebl_irs_workflow.models import Lemma, LemmaStatus, IssueLemma, Issue
+from .serializers import ListEntrySerializer
 
 
 def create_child_from_parent_model(child_cls, parent_obj, init_values: dict):
@@ -83,7 +84,20 @@ def create_columns(listentry_id, kind="obv"):
     else:
         list_entry.columns_scrape[kind] = list_entry.scrape[kind]
     list_entry.save()
-    return f"created scrape columns for {listentry_id}"
+    header = {"X-Secret": os.environ.get("FRONTEND_CORS_TOKEN", "")}
+    obj_data = [
+        ListEntrySerializer(list_entry).data,
+    ]
+    res = requests.post(
+        os.environ.get(
+            "FRONTEND_POST_FINISHED",
+            "https://oebl-research.acdh-dev.oeaw.ac.at/message/import-lemmas",
+        ),
+        headers=header,
+        data=obj_data,
+    )
+
+    return f"created scrape columns for {listentry_id}, posting to frontend resulted in {res.status_code}"
 
 
 @shared_task(time_limit=500)

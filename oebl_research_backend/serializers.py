@@ -4,9 +4,20 @@ from drf_spectacular.types import OpenApiTypes
 from typing import List as ListType
 
 from .models import ListEntry, List
-from oebl_irs_workflow.serializers import EditorSerializer
 
 gndType = ListType[str]
+
+
+class EditorSerializer(serializers.Serializer):
+    userId = serializers.IntegerField(source="pk")
+    email = serializers.EmailField(source="email")
+    name = serializers.SerializerMethodField(method_name="get_name")
+
+    def get_name(self, object):
+        if object.last_name is not None:
+            return f"{object.last_name}, {object.first_name}"
+        else:
+            return object.username
 
 
 class ListSerializer(serializers.ModelSerializer):

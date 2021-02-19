@@ -32,7 +32,7 @@ class ListEntry(models.Model):
     source_id = models.PositiveIntegerField()
     created = models.DateTimeField(auto_now_add=True)
     selected = models.BooleanField(default=False)
-    list = models.ForeignKey(List, on_delete=models.CASCADE)
+    list = models.ForeignKey(List, on_delete=models.CASCADE, null=True, blank=True)
     columns_scrape = models.JSONField(null=True, blank=True)
     columns_user = models.JSONField(null=True, blank=True)
     scrape = models.JSONField(null=True, blank=True)
