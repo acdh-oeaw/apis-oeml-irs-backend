@@ -94,7 +94,7 @@ def create_columns(listentry_id, kind="obv"):
             "https://oebl-research.acdh-dev.oeaw.ac.at/message/import-lemmas",
         ),
         headers=header,
-        data=obj_data,
+        json=obj_data,
     )
 
     return f"created scrape columns for {listentry_id}, posting to frontend resulted in {res.status_code}"
