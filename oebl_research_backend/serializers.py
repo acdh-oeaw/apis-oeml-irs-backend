@@ -10,7 +10,7 @@ gndType = ListType[str]
 
 class EditorSerializer(serializers.Serializer):
     userId = serializers.IntegerField(source="pk")
-    email = serializers.EmailField(source="email")
+    email = serializers.EmailField()
     name = serializers.SerializerMethodField(method_name="get_name")
 
     def get_name(self, object):
