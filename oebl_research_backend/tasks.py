@@ -33,6 +33,25 @@ def create_child_from_parent_model(child_cls, parent_obj, init_values: dict):
 
 
 @shared_task(time_limit=500)
+def post_results(ccc, listentry_id):
+    list_entry = ListEntry.objects.get(pk=listentry_id)
+    header = {"X-Secret": os.environ.get("FRONTEND_CORS_TOKEN", "")}
+    obj_data = [
+        ListEntrySerializer(list_entry).data,
+    ]
+    res = requests.post(
+        os.environ.get(
+            "FRONTEND_POST_FINISHED",
+            "https://oebl-research.acdh-dev.oeaw.ac.at/message/import-lemmas",
+        ),
+        headers=header,
+        json=obj_data,
+    )
+
+    return f"Posted result for {listentry_id} to frontend resulted in {res.status_code}"
+
+
+@shared_task(time_limit=500)
 def create_columns(listentry_id, kind="obv"):
     list_entry = ListEntry.objects.get(pk=listentry_id)
     cols = dict()
@@ -84,20 +103,8 @@ def create_columns(listentry_id, kind="obv"):
     else:
         list_entry.columns_scrape[kind] = list_entry.scrape[kind]
     list_entry.save()
-    header = {"X-Secret": os.environ.get("FRONTEND_CORS_TOKEN", "")}
-    obj_data = [
-        ListEntrySerializer(list_entry).data,
-    ]
-    res = requests.post(
-        os.environ.get(
-            "FRONTEND_POST_FINISHED",
-            "https://oebl-research.acdh-dev.oeaw.ac.at/message/import-lemmas",
-        ),
-        headers=header,
-        json=obj_data,
-    )
 
-    return f"created scrape columns for {listentry_id}, posting to frontend resulted in {res.status_code}"
+    return f"created scrape columns for {listentry_id}"
 
 
 @shared_task(time_limit=500)
@@ -336,16 +343,21 @@ def scrape(
         if test_gnd:
             obj_scrape.append((gnds[0], ent, pers, list_entry))
     res = group(
-        scr.s(
-            entry[0],
-            f"{entry[1].get('lastName', '-')}, {entry[1].get('firstName', '-')}",
-            entry[2].pk,
-            entry[3].pk,
-            scrape_id,
-            include_wikipedia=wiki,
+        chord(
+            (
+                scr.s(
+                    entry[0],
+                    f"{entry[1].get('lastName', '-')}, {entry[1].get('firstName', '-')}",
+                    entry[2].pk,
+                    entry[3].pk,
+                    scrape_id,
+                    include_wikipedia=wiki,
+                )
+                for scr in scrapes
+            ),
+            post_results.s(entry[3].pk),
         )
         for entry in obj_scrape
-        for scr in scrapes
     )()
     return f"started job for {user_id}"
 
