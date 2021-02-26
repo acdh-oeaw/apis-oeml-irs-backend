@@ -33,12 +33,12 @@ def create_child_from_parent_model(child_cls, parent_obj, init_values: dict):
 
 
 @shared_task(time_limit=500)
-def post_results(ccc, listentry_id):
-    list_entry = ListEntry.objects.get(pk=listentry_id)
+def post_results(ccc, listentry_id=[]):
+    if isinstance(listentry_id, int):
+        listentry_id = [listentry_id]
+    list_entry = ListEntry.objects.filter(pk__in=listentry_id)
     header = {"X-Secret": os.environ.get("FRONTEND_CORS_TOKEN", "")}
-    obj_data = [
-        ListEntrySerializer(list_entry).data,
-    ]
+    obj_data = ListEntrySerializer(list_entry, many=True).data
     res = requests.post(
         os.environ.get(
             "FRONTEND_POST_FINISHED",
@@ -296,6 +296,7 @@ def scrape(
 ):
     scrape_id = self.request.id
     obj_scrape = []
+    obj_save = []
     lst = List.objects.get(pk=list_id)
     for idx, ent in enumerate(obj["lemmas"]):
         if not update:
@@ -342,6 +343,10 @@ def scrape(
             test_gnd = len(gnds) == 1
         if test_gnd:
             obj_scrape.append((gnds[0], ent, pers, list_entry))
+        else:
+            obj_save.append(list_entry)
+    if len(obj_save) > 0:
+        res_obj_save = post_results.delay("test", listentry_id=[x.pk for x in obj_save])
     res = group(
         chord(
             (
