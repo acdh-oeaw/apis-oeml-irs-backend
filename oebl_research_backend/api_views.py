@@ -10,9 +10,18 @@ from bson.json_util import dumps
 from drf_spectacular.utils import inline_serializer, extend_schema, extend_schema_view
 from drf_spectacular.types import OpenApiTypes
 from rest_framework import status
+from django_filters import rest_framework as filters
 
 from .models import ListEntry, Person, List, Editor
 from .serializers import ListEntrySerializer, ListSerializer
+
+
+class LemmaResearchFilter(filters.FilterSet):
+    modified_after = filters.DateTimeFilter(field_name="last_updated", lookup_expr="gt")
+
+    class Meta:
+        model = ListEntry
+        fields = ["modified_after", "deleted"]
 
 
 @extend_schema(
@@ -129,9 +138,11 @@ class LemmaResearchView(viewsets.ModelViewSet):
         GenericAPIView ([type]): [description]
     """
 
-    queryset = ListEntry.objects.filter(deleted=False)
+    queryset = ListEntry.objects.all()
     serializer_class = ListEntrySerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = LemmaResearchFilter
     http_method_names = ["get", "post", "head", "options", "delete", "update", "patch"]
 
     def create(self, request):
@@ -144,7 +155,6 @@ class LemmaResearchView(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-
         if getattr(instance, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.

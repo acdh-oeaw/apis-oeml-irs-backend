@@ -47,6 +47,7 @@ class ListEntrySerializer(serializers.ModelSerializer):
     dateOfBirth = serializers.DateField(source="person.date_of_birth")
     dateOfDeath = serializers.DateField(source="person.date_of_death")
     list = ListSerializerLimited(required=False, allow_null=True)
+    deleted = serializers.BooleanField(default=False)
 
     def update(self, instance, validated_data):
         instance.selected = validated_data.get("selected", instance.selected)
@@ -120,4 +121,6 @@ class ListEntrySerializer(serializers.ModelSerializer):
             "dateOfDeath",
             "columns_user",
             "columns_scrape",
+            "deleted",
+            "last_updated",
         ]
