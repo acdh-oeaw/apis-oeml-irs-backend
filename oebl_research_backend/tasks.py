@@ -21,7 +21,11 @@ from .serializers import ListEntrySerializer
 def create_child_from_parent_model(child_cls, parent_obj, init_values: dict):
     attrs = {}
     for field in parent_obj._meta._get_fields(reverse=False, include_parents=True):
-        if field.attname not in attrs:
+        if (
+            field.attname not in attrs
+            and not field.attname.endswith("_set")
+            and field.attname not in ["text", "title", "profession", "collection"]
+        ):
             attrs[field.attname] = getattr(parent_obj, field.attname)
     attrs[child_cls._meta.parents[parent_obj.__class__].name] = parent_obj
     attrs.update(init_values)
@@ -376,10 +380,15 @@ def create_new_workflow_lemma(
     editor_id, research_lemma_id, gnd=None, person_attrb={}, issue_id=None
 ):
     if gnd:
-        pers = RDFParser(gnd, "Person").save()
-        if not pers:
-            raise EntityAlreadyExists(f"{gnd} already in db")
-        workflow_lemma = create_child_from_parent_model(Lemma, pers, person_attrb)
+        try:
+            pers = RDFParser(gnd, "Person").get_or_create()
+            if not pers:
+                raise EntityAlreadyExists(f"{gnd} already in db")
+            workflow_lemma = create_child_from_parent_model(
+                Lemma, pers, person_attrb
+            ).save()
+        except:
+            workflow_lemma = Lemma.objects.create(**person_attrb)
     else:
         workflow_lemma = Lemma.objects.create(**person_attrb)
     lemma_status, created = LemmaStatus.objects.get_or_create(name="angelegt")
@@ -398,9 +407,9 @@ def create_new_workflow_lemma(
 
 @shared_task(time_limit=500)
 def move_research_lemmas_to_workflow(editor_id, lst_research_lemmas, issue=None):
-    if issue:
-        issue1, created = Issue.objects.get_or_create(**issue)
-        issue_id = issue1.pk
+    # if issue:
+    #    issue1, created = Issue.objects.get_or_create(**issue)
+    #    issue = issue1.pk
     for lm in lst_research_lemmas:
         le = ListEntry.objects.get(pk=lm)
         gnd = False
@@ -409,6 +418,6 @@ def move_research_lemmas_to_workflow(editor_id, lst_research_lemmas, issue=None)
                 gnd = uri
         person_attrb = le.get_dict()
         create_new_workflow_lemma.delay(
-            editor_id, le.person_id, gnd, person_attrb, issue_id
+            editor_id, le.person_id, gnd, person_attrb, issue
         )
-    return f"moved lemmas to "
+    return f"moved lemmas to Workflow tool"

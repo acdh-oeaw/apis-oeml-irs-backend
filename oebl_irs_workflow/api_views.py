@@ -1,7 +1,12 @@
 from rest_framework.response import Response
 from rest_framework import filters, viewsets, renderers
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import serializers
+from drf_spectacular.utils import inline_serializer, extend_schema, extend_schema_view
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+
 from .models import (
     Author,
     Issue,
@@ -22,6 +27,7 @@ from .serializers import (
     LemmaNoteSerializer,
     LemmaSerializer,
     LemmaLabelSerializer,
+    ResearchLemma2WorkflowLemmaSerializer,
 )
 
 
@@ -96,3 +102,26 @@ class LemmaLabelViewset(viewsets.ModelViewSet):
     serializer_class = LemmaLabelSerializer
     filter_fields = ["issuelemma"]
     permission_classes = [IsAuthenticated]
+
+
+@extend_schema(
+    description="""Endpoint that allows to POST a list of lemmas to the research pipeline for processing.
+        All additional fields not mentioned in the Schema are stored and retrieved as user specific fields.
+        """,
+    methods=["POST"],
+    request=ResearchLemma2WorkflowLemmaSerializer,
+    responses={
+        201: inline_serializer(
+            many=False,
+            name="ResearchLemma2WorkfloweResponse",
+            fields={"success": serializers.UUIDField()},
+        ),
+    },
+)
+class ResearchLemma2WorkflowLemma(APIView):
+    def post(self, request, format=None):
+        serializer = ResearchLemma2WorkflowLemmaSerializer(data=request.data)
+        if serializer.is_valid():
+            res = serializer.create(serializer.data, request.user)
+            return Response(res, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -4,6 +4,8 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from drf_spectacular.utils import inline_serializer
 from rest_framework import serializers
+from rest_framework.response import Response
+
 from .models import (
     Author,
     Editor,
@@ -14,7 +16,8 @@ from .models import (
     LemmaNote,
     LemmaLabel,
 )
-
+from oebl_research_backend.models import ListEntry as researchlemmas
+from oebl_research_backend.tasks import move_research_lemmas_to_workflow
 
 Array = List[int]
 
@@ -34,6 +37,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ["password", "id"]
+
 
 class UserSerializer(serializers.ModelSerializer):
     userId = serializers.IntegerField(source="pk")
@@ -139,3 +143,17 @@ class IssueLemmaSerializer(serializers.ModelSerializer):
         model = IssueLemma
         fields = "__all__"
         read_only_fields = ["serialization"]
+
+
+class ResearchLemma2WorkflowLemmaSerializer(serializers.Serializer):
+    issue = serializers.PrimaryKeyRelatedField(
+        queryset=Issue.objects.all(), required=False
+    )
+    lemmas = serializers.ListField(child=serializers.IntegerField(), required=True)
+
+    def create(self, validated_data, editor):
+        issue = validated_data["issue"] if "issue" in validated_data.keys() else None
+        res = move_research_lemmas_to_workflow.delay(
+            editor.pk, self.validated_data["lemmas"], issue=issue
+        )
+        return {"success": res.id}

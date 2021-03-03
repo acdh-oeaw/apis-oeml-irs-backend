@@ -1,4 +1,6 @@
 from rest_framework import routers
+from django.urls import path
+
 from .api_views import (
     AuthorViewset,
     EditorViewset,
@@ -8,6 +10,7 @@ from .api_views import (
     LemmaNoteViewset,
     LemmaViewset,
     LemmaLabelViewset,
+    ResearchLemma2WorkflowLemma,
 )
 
 app_name = "oebl_irs_workflow"
@@ -23,3 +26,5 @@ router.register(r"lemma-note", LemmaNoteViewset)
 router.register(r"lemma-label", LemmaLabelViewset)
 
 urlpatterns = router.urls
+
+urlpatterns += [path(r"research2workflow/", ResearchLemma2WorkflowLemma.as_view())]

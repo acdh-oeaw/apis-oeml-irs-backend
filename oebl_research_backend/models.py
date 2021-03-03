@@ -44,8 +44,8 @@ class ListEntry(models.Model):
 
     def get_dict(self):
         res = {}
-        res["name"] = self.person.get("name", None)
-        res["first_name"] = self.person.get("first_name", None)
-        res["start_date"] = self.person.get("date_of_birth", None)
-        res["end_date"] = self.person.get("date_of_death", None)
+        res["name"] = getattr(self.person, "name", None)
+        res["first_name"] = getattr(self.person, "first_name", None)
+        res["start_date"] = getattr(self.person, "date_of_birth", None)
+        res["end_date"] = getattr(self.person, "date_of_death", None)
         return res
