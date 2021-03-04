@@ -444,9 +444,6 @@ def move_research_lemmas_to_workflow(editor_id, lst_research_lemmas, issue=None)
                 gnd = uri
         person_attrb = le.get_dict()
         p_list.append((editor_id, le.person_id, gnd, person_attrb, issue))
-        create_new_workflow_lemma.delay(
-            editor_id, le.person_id, gnd, person_attrb, issue
-        )
     res = chord(
         (create_new_workflow_lemma.s(*p1) for p1 in p_list),
         post_results_issuelemma.s(),
