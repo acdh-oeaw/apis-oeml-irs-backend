@@ -146,7 +146,16 @@ class IssueLemma(models.Model):
                 status = None
             if self._loaded_values["lemma_id"] is not None:
                 lemma = model_to_dict(
-                    Lemma.objects.get(pk=self._loaded_values["lemma_id"])
+                    Lemma.objects.get(pk=self._loaded_values["lemma_id"]),
+                    fields=[
+                        "id",
+                        "first_name",
+                        "name",
+                        "start_date_written",
+                        "end_date_written",
+                        "info",
+                        "collection",
+                    ],
                 )
                 if lemma["collection"]:
                     lemma["collection"] = [x.pk for x in lemma["collection"]]
@@ -154,18 +163,16 @@ class IssueLemma(models.Model):
                 lemma = None
             if self._loaded_values["author_id"] is not None:
                 author = model_to_dict(
-                    Author.objects.get(pk=self._loaded_values["author_id"])
+                    Author.objects.get(pk=self._loaded_values["author_id"]),
+                    fields=["id", "username", "first_name", "last_name", "email"],
                 )
-                if author["date_joined"]:
-                    author["date_joined"] = author["date_joined"].isoformat()
             else:
                 author = None
             if self._loaded_values["editor_id"] is not None:
                 editor = model_to_dict(
-                    Editor.objects.get(pk=self._loaded_values["editor_id"])
+                    Editor.objects.get(pk=self._loaded_values["editor_id"]),
+                    fields=["id", "username", "first_name", "last_name", "email"],
                 )
-                if editor["date_joined"]:
-                    editor["date_joined"] = editor["date_joined"].isoformat()
             else:
                 editor = None
             res = {

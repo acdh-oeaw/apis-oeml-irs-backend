@@ -88,7 +88,7 @@ class LemmaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lemma
-        fields = ["firstName", "lastName", "dateOfBirth", "dateOfDeath", "info"]
+        fields = ["id", "firstName", "lastName", "dateOfBirth", "dateOfDeath", "info"]
 
 
 class LemmaStatusSerializer(serializers.ModelSerializer):
@@ -130,14 +130,58 @@ class IssueLemmaSerializerOpenApi(serializers.ModelSerializer):
 class IssueLemmaSerializer(serializers.ModelSerializer):
     notes = serializers.SerializerMethodField(method_name="get_notes")
     serialization = serializers.SerializerMethodField(method_name="get_serialization")
+    lemma = LemmaSerializer()
 
     @extend_schema_field(IssueLemmaSerializerOpenApi(many=True))
     def get_serialization(self, object):
-        return object.serialization
+        if len(object.serialization) > 10:
+            return object.serialization[-10:]
+        else:
+            return object.serialization
 
     def get_notes(self, object) -> Array:
         res = LemmaNote.objects.filter(lemma=object.lemma)
         return list(res.values_list("pk", flat=True))
+
+    def update(self, instance, validated_data):
+        if isinstance(validated_data["lemma"], int):
+            lemma = validated_data["lemma"]
+        elif "id" in self.initial_data["lemma"].keys():
+            lemma = Lemma.objects.get(pk=self.initial_data["lemma"]["id"])
+            for k, v in self.initial_data["lemma"].items():
+                setattr(lemma, k, v)
+            lemma.save()
+            lemma = lemma.pk
+        else:
+            lemma = Lemma.objects.create(**validated_data["lemma"])
+            lemma = lemma.pk
+        instance.lemma_id = lemma
+        for k, v in validated_data.items():
+            if k == "lemma":
+                continue
+            setattr(instance, k, v)
+        instance.save()
+        return instance
+
+    def create(self, validated_data):
+        instance = IssueLemma()
+        if isinstance(validated_data["lemma"], int):
+            lemma = validated_data["lemma"]
+        if "id" in validated_data["lemma"].keys():
+            lemma = Lemma.objects.get(pk=validated_data["lemma"]["id"])
+            for k, v in validated_data["lemma"].items():
+                setattr(lemma, k, v)
+            lemma = lemma.pk
+        else:
+            lemma = Lemma.objects.create(**validated_data["lemma"])
+            lemma = lemma.pk
+        instance.lemma_id = lemma
+        for k, v in validated_data.items():
+            if k == "lemma":
+                continue
+            setattr(instance, k, v)
+        instance.save()
+        return instance
 
     class Meta:
         model = IssueLemma
