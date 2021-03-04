@@ -144,22 +144,26 @@ class IssueLemmaSerializer(serializers.ModelSerializer):
         return list(res.values_list("pk", flat=True))
 
     def update(self, instance, validated_data):
-        if isinstance(validated_data["lemma"], int):
-            lemma = validated_data["lemma"]
-        elif "id" in self.initial_data["lemma"].keys():
-            lemma = Lemma.objects.get(pk=self.initial_data["lemma"]["id"])
-            for k, v in self.initial_data["lemma"].items():
-                setattr(lemma, k, v)
-            lemma.save()
-            lemma = lemma.pk
-        else:
-            lemma = Lemma.objects.create(**validated_data["lemma"])
-            lemma = lemma.pk
-        instance.lemma_id = lemma
+        if "lemma" in validated_data.keys():
+            if isinstance(validated_data["lemma"], int):
+                lemma = validated_data["lemma"]
+            elif "id" in self.initial_data["lemma"].keys():
+                lemma = Lemma.objects.get(pk=self.initial_data["lemma"]["id"])
+                for k, v in self.initial_data["lemma"].items():
+                    setattr(lemma, k, v)
+                lemma.save()
+                lemma = lemma.pk
+            else:
+                lemma = Lemma.objects.create(**validated_data["lemma"])
+                lemma = lemma.pk
+            instance.lemma_id = lemma
         for k, v in validated_data.items():
             if k == "lemma":
                 continue
-            setattr(instance, k, v)
+            elif k == "label":
+                instance.set(v)
+            else:
+                setattr(instance, k, v)
         instance.save()
         return instance
 
