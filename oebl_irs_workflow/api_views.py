@@ -17,6 +17,7 @@ from .models import (
     LemmaLabel,
     Editor,
 )
+from .serializer_rl2wf import ResearchLemma2WorkflowLemmaSerializer
 from .serializers import (
     UserDetailSerializer,
     AuthorSerializer,
@@ -27,7 +28,6 @@ from .serializers import (
     LemmaNoteSerializer,
     LemmaSerializer,
     LemmaLabelSerializer,
-    ResearchLemma2WorkflowLemmaSerializer,
 )
 
 

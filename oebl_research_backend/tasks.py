@@ -16,6 +16,7 @@ from .models import Person, List, ListEntry
 from apis_core.helper_functions.RDFParser import RDFParser
 from oebl_irs_workflow.models import Lemma, LemmaStatus, IssueLemma, Issue
 from .serializers import ListEntrySerializer
+from oebl_irs_workflow.serializers import IssueLemmaSerializer
 
 
 def create_child_from_parent_model(child_cls, parent_obj, init_values: dict):
@@ -53,6 +54,25 @@ def post_results(ccc, listentry_id=[]):
     )
 
     return f"Posted result for {listentry_id} to frontend resulted in {res.status_code}"
+
+
+@shared_task(time_limit=500)
+def post_results_issuelemma(issuelemma_id):
+    if isinstance(issuelemma_id, int):
+        issuelemma_id = [issuelemma_id]
+    issuelemma_entry = IssueLemma.objects.filter(pk__in=issuelemma_id)
+    header = {"X-Secret": os.environ.get("FRONTEND_CORS_TOKEN", "")}
+    obj_data = IssueLemmaSerializer(issuelemma_entry, many=True).data
+    res = requests.post(
+        os.environ.get(
+            "FRONTEND_POST_FINISHED_ISSUELEMMA",
+            "https://oebl-research.acdh-dev.oeaw.ac.at/message/import-issue-lemmas",
+        ),
+        headers=header,
+        json=obj_data,
+    )
+
+    return f"Posted result for IssueLemmas {issuelemma_id} to frontend resulted in {res.status_code}"
 
 
 @shared_task(time_limit=500)
@@ -198,7 +218,8 @@ def get_wikipedia_entry(
         vers_hist_entries = tree_vers_hist.xpath('//*[@id="pagehistory"]/li')
         count_vers = len(vers_hist_entries)
         count_editors = [
-            x.xpath("./span[1]/span[2]/a/bdi/text()")[0] for x in vers_hist_entries
+            x.xpath('.//span[@class="history-user"]/a/bdi/text()')[0]
+            for x in vers_hist_entries
         ]
         count_editors = len(list(dict.fromkeys(count_editors)))
         next_link = tree_vers_hist.xpath('//*[@id="mw-content-text"]/a[@rel="next"]')
@@ -212,7 +233,8 @@ def get_wikipedia_entry(
             vers_hist_entries = tree_vers_hist.xpath('//*[@id="pagehistory"]/li')
             count_vers += len(vers_hist_entries)
             count_editors_1 = [
-                x.xpath("./span[1]/span[2]/a/bdi/text()")[0] for x in vers_hist_entries
+                x.xpath('.//span[@class="history-user"]/a/bdi/text()')[0]
+                for x in vers_hist_entries
             ]
             count_editors += len(list(dict.fromkeys(count_editors_1)))
             next_link = tree_vers_hist.xpath(
@@ -220,7 +242,8 @@ def get_wikipedia_entry(
             )
             print(next_link)
         print(count_vers)
-    except:
+    except Exception as e:
+        print(e)
         count_editors = "Not available"
         count_vers = "Not available"
     page = requests.get(url)
@@ -402,7 +425,7 @@ def create_new_workflow_lemma(
     research_lemma = Person.objects.get(pk=research_lemma_id)
     research_lemma.irs_person = workflow_lemma
     research_lemma.save()
-    return f"created IssueLemma {il.pk}"
+    return il.pk
 
 
 @shared_task(time_limit=500)
@@ -410,14 +433,22 @@ def move_research_lemmas_to_workflow(editor_id, lst_research_lemmas, issue=None)
     # if issue:
     #    issue1, created = Issue.objects.get_or_create(**issue)
     #    issue = issue1.pk
+    p_list = []
+    le_list = []
     for lm in lst_research_lemmas:
         le = ListEntry.objects.get(pk=lm)
+        le_list.append(le.pk)
         gnd = False
         for uri in le.person.uris:
             if "d-nb.info" in uri:
                 gnd = uri
         person_attrb = le.get_dict()
+        p_list.append((editor_id, le.person_id, gnd, person_attrb, issue))
         create_new_workflow_lemma.delay(
             editor_id, le.person_id, gnd, person_attrb, issue
         )
+    res = chord(
+        (create_new_workflow_lemma.s(*p1) for p1 in p_list),
+        post_results_issuelemma.s(),
+    )()
     return f"moved lemmas to Workflow tool"

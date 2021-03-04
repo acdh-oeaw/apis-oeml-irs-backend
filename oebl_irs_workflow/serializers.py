@@ -17,7 +17,6 @@ from .models import (
     LemmaLabel,
 )
 from oebl_research_backend.models import ListEntry as researchlemmas
-from oebl_research_backend.tasks import move_research_lemmas_to_workflow
 
 Array = List[int]
 
@@ -134,8 +133,9 @@ class IssueLemmaSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(IssueLemmaSerializerOpenApi(many=True))
     def get_serialization(self, object):
-        if len(object.serialization) > 10:
-            return object.serialization[-10:]
+        if object.serialization:
+            if len(object.serialization) > 10:
+                return object.serialization[-10:]
         else:
             return object.serialization
 
@@ -187,17 +187,3 @@ class IssueLemmaSerializer(serializers.ModelSerializer):
         model = IssueLemma
         fields = "__all__"
         read_only_fields = ["serialization"]
-
-
-class ResearchLemma2WorkflowLemmaSerializer(serializers.Serializer):
-    issue = serializers.PrimaryKeyRelatedField(
-        queryset=Issue.objects.all(), required=False
-    )
-    lemmas = serializers.ListField(child=serializers.IntegerField(), required=True)
-
-    def create(self, validated_data, editor):
-        issue = validated_data["issue"] if "issue" in validated_data.keys() else None
-        res = move_research_lemmas_to_workflow.delay(
-            editor.pk, self.validated_data["lemmas"], issue=issue
-        )
-        return {"success": res.id}
