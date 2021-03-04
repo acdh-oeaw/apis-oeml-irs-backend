@@ -160,8 +160,8 @@ class IssueLemmaSerializer(serializers.ModelSerializer):
         for k, v in validated_data.items():
             if k == "lemma":
                 continue
-            elif k == "label":
-                instance.set(v)
+            elif k == "labels":
+                instance.labels.set(v)
             else:
                 setattr(instance, k, v)
         instance.save()
