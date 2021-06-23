@@ -1,0 +1,93 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Python: Django",
+				"type": "python",
+				"request": "launch",
+				"program": "${workspaceFolder}/manage.py",
+				"args": [
+					"runserver",
+					"0.0.0.0:8000"
+				],
+				"django": true,
+				"env": {
+					"DATABASE_URL": "postgresql://postgres:postgres@localhost:5432/postgres"
+				}
+			},
+			{
+				"name": "Python: Django Migrate",
+				"type": "python",
+				"request": "launch",
+				"program": "${workspaceFolder}/manage.py",
+				"args": [
+					"migrate"
+				],
+				"django": true,
+				"env": {
+					"DATABASE_URL": "postgresql://postgres:postgres@localhost:5432/postgres"
+				}
+			},
+			{
+				"name": "Python: Django Makemigrations",
+				"type": "python",
+				"request": "launch",
+				"program": "${workspaceFolder}/manage.py",
+				"args": [
+					"makemigrations"
+				],
+				"django": true,
+				"env": {
+					"DATABASE_URL": "postgresql://postgres:postgres@localhost:5432/postgres"
+				},
+			},
+			{
+				"name": "Python: Celery main",
+				"type": "python",
+				"request": "launch",
+				"module": "celery",
+				"console": "integratedTerminal",
+				"args": [
+					"-A",
+					"apis.settings",
+					"worker",
+					"-l",
+					"info",
+					"-c",
+					"4",
+					"-P",
+					"solo",
+				]
+			},
+			{
+				"name": "Python: Celery limited",
+				"type": "python",
+				"request": "launch",
+				"module": "celery",
+				"console": "integratedTerminal",
+				"args": [
+					"-A",
+					"apis.settings",
+					"worker",
+					"-Q",
+					"limited_queue",
+					"-l",
+					"info",
+					"-c",
+					"1",
+					"-n",
+					"limited_queue",
+					"-P",
+					"solo",
+				]
+			},
+		]
+	}
+}
